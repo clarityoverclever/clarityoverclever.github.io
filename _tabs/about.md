@@ -22,5 +22,5 @@ The goal is not to join the cargo cult of the "copy and paste AI" developer, but
 
 **AI should amplify developer clarity, not replace it.**
 
-## Who am I?
+## How a Joke Changed My Career
 Seven years ago I was told that, "there are two types of system administrators in the world, those who know PowerShell and, 'would you like fries 🍟 with that'" . . . and, I've been learning PowerShell ever since.

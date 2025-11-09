@@ -3,6 +3,8 @@
 icon: fas fa-info-circle
 order: 4
 ---
+## How a Joke Changed My Career
+Seven years ago I was told that, "there are two types of system administrators in the world, those who know PowerShell and, 'would you like fries 🍟 with that'" . . . and, I've been learning PowerShell ever since.
 
 ## About This Project
 **Build automations your future teammates can read, trust, and extend.**
@@ -21,6 +23,3 @@ This project also attempts to explore a modern developers workflow where AI acts
 The goal is not to join the cargo cult of the "copy and paste AI" developer, but to __think__ with AI; to test assumptions, explore alternatives, and refine reasoning while maintaining full ownership of design and implementation.
 
 **AI should amplify developer clarity, not replace it.**
-
-## How a Joke Changed My Career
-Seven years ago I was told that, "there are two types of system administrators in the world, those who know PowerShell and, 'would you like fries 🍟 with that'" . . . and, I've been learning PowerShell ever since.

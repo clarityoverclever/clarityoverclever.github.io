@@ -54,7 +54,7 @@ analytics:
   google:
     id: # fill in your Google Analytics ID
   goatcounter:
-    id: clarityoverclever.goatcounter.com
+    id: clarityoverclever
   umami:
     id: # fill in your Umami ID
     domain: # fill in your Umami domain

@@ -33,7 +33,7 @@ Write-Output -InputObject "$time :: $message"
 
 I would say that this _is_ a log entry, but there are several areas of improvement.
  - Extract logic into a function.
- - Declare explicit data types to add calrity and error resistance.
+ - Declare explicit data types to add clarity and error resistance.
  - Include metadata, like error levels or codes
  - Add persistence for monitoring or later analysis
 
@@ -148,3 +148,5 @@ function Write-Log {
 
 ## Final thoughts
 Making logging a design habit is a key step toward building automation that’s not just functional, but reliable, readable, and built to last.
+
+_Last Updated: 10 Nov 2025

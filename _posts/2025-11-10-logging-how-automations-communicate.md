@@ -1,6 +1,6 @@
 ---
 title: Logging - How Automations Communicate
-author: Keith Marshall
+author: "Keith Marshall"
 date: 2025-11-10
 categories: [tutorial]
 tags: [philosophy, tooling]
@@ -111,7 +111,7 @@ function Write-Log {
     
     [string] $time = Get-Date -Format yyyy-MM-ddTHH:mm:ss # ISO 8601 format
 
-    Write-Output -InputObject "$time :: [$LogLevel] :: $Message" | Out-File -Path $path -Encoding UTF8 -Append
+    Write-Output -InputObject "$time :: [$LogLevel] :: $Message" | Out-File -Path $Path -Encoding UTF8 -Append
 }
 ```
 
@@ -142,7 +142,7 @@ function Write-Log {
         return
     }
 
-    Write-Output -InputObject "$time :: [$LogLevel] :: $Message" | Out-File -Path $path -Encoding UTF8 -Append
+    Write-Output -InputObject "$time :: [$LogLevel] :: $Message" | Out-File -Path $Path -Encoding UTF8 -Append
 }
 ```
 

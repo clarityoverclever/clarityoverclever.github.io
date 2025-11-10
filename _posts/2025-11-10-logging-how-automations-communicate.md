@@ -15,7 +15,7 @@ Logging acts as a communication layer between your code's execution and you, whi
 
 ## What should you log?
 Logs should be clean, concise, meaningful, and most of all, written to be readable by the consumer.  
-I use the term consumer intentionally. Logs aren't just for you; they can be consumed by teammates, service technicians, monitoring services, dashboards, alerting systems, or other authomations... so format them with your target audience in mind.
+I use the term consumer intentionally. Logs aren't just for you; they can be consumed by teammates, service technicians, monitoring services, dashboards, alerting systems, or other automations... so format them with your target audience in mind.
 
 ## How to start logging
 PowerShell includes built-in cmdlets that support interactive logging; however, since this blog focuses on automation, I’ll be exploring how to build non-interactive logging that works reliably in unattended automamtions.
@@ -95,7 +95,7 @@ function Write-Log {
 }
 ```
 ### Fourth: Capturing the Logs
-In this final step we'll capturing the logs in a local file. This raises a few questions like, what if the file does not exist? is Write-Output the right cmdlet to use for writing to a file, or should I consider Set/Add-Content?
+In this final step we'll be capturing the logs in a local file. This raises a few questions like, what if the file does not exist? is Write-Output the right cmdlet to use for writing to a file, or should I consider Set/Add-Content?
 
 There isn't one right answer, but I will stick with Write-Output since it is slightly more in alignment with my automation philosophies.
 
@@ -149,4 +149,4 @@ function Write-Log {
 ## Final thoughts
 Making logging a design habit is a key step toward building automation that’s not just functional, but reliable, readable, and built to last.
 
-[code](https://github.com/clarityoverclever/libClarity/blob/main/Logging/Write-Log.ps1)
+[download the code here](https://github.com/clarityoverclever/libClarity/blob/main/Logging/Write-Log.ps1)

@@ -15,10 +15,10 @@ Logging acts as a communication layer between your code's execution and you, whi
 
 ## What should you log?
 Logs should be clean, concise, meaningful, and most of all, written to be readable by the consumer.  
-I use the term consumer intentionally. Logs aren't just for you; they can be consumed teammates, service technicians, monitoring services, dashboards, alerting systems, or other authomations... so format them with your target audience in mind.
+I use the term consumer intentionally. Logs aren't just for you; they can be consumed by teammates, service technicians, monitoring services, dashboards, alerting systems, or other authomations... so format them with your target audience in mind.
 
 ## How to start logging
-PowerShell includes built-in cmdlets that support interactive logging. However, since this blog focuses on automation, I’ll be exploring how to build non-interactive logging that works reliably in unattended scripts.
+PowerShell includes built-in cmdlets that support interactive logging; however, since this blog focuses on automation, I’ll be exploring how to build non-interactive logging that works reliably in unattended automamtions.
 
 ### Essentials
 A log is essentially a formatted message that contains data for you about an automation's execution.
@@ -33,16 +33,16 @@ Write-Output -InputObject "$time :: $message"
 
 I would say that this _is_ a log entry, but there are several areas of improvement.
  - Extract logic into a function.
- - Declare explicit data types to add clarity and error resistance.
+ - Declare explicit data types and validation to add clarity and error resistance.
  - Include metadata, like error levels or codes
  - Add persistence for monitoring or later analysis
 
 #### Proxy-functions and wrappers
-Sometimes we need to expand or restrict a cmdlet’s behavior which can be done by "wrapping" the code in a function. We will do this with Write-Output to focus it away from general output into specialized log output. I will talk at length about wrappers and function development in a future post. For now let's break down our log develpment into stages.
+Sometimes we need to expand or restrict a cmdlet’s behavior which can be done by "wrapping" code in a function. We will do this with Write-Output to focus it away from general output and into specialized log output. I will talk at length about wrappers and function development in a future post, but for now let's break down our log develpment into stages.
 
 - Extract the method into a function
-- Tighten up the implemenation with data typing
-- Add functionlity to meet expectation
+- Tighten up the implemenation with data typing and validation
+- Add functionlity to meet expectations
 
 ### First: Extract the Method into a Function
 Declare a function name and signature and extract your method into it. Bonus points for shoe-horning 
@@ -60,9 +60,9 @@ now we can call our wrapper with:
 This adds a few advantages, the least of which is that we don't have to build $time for every log event, and secondly, we can extend Write-Log() with addtional functionality as we develop new log requirements.
 
 ### Second: Be Explicit About Data Types
-It's easy to let PowerShell infer variable data types, which is often fine, but being explicit about data types applies a level of readability and error resilience to your code in cases where assumptions about them don't hold up. Additionally, your code will have better tooling support for things like IntelliSense and static analysis, and make your code easier to test, review, and extend in the future.
+It's easy to let PowerShell infer variable data types, which is often fine, but being explicit about data types applies a level of readability and error resilience to your code in cases where assumptions about them don't hold up. Additionally, your code will have better tooling support for things like IntelliSense and static analysis; and make your code easier to test, review, and extend in the future.
 
-In our Write-Log function it might be assumed that $time is of type DateTime instead of type String for example.
+In our Write-Log function it might be assumed that $time is of type _DateTime_ instead of type _String_ for example.
 
 ```powershell
 function Write-Log ([string] $Message) {
@@ -78,13 +78,13 @@ A common extension of a log entry is a log level which allows the separation of 
 - ERROR for breaking errors
 - DEBUG for detailed diagnositc information
 
-To support log levels, we’ll convert our _basic_ function into an _advanced_ one by using a param() block. This lets us define acceptable values with ValidateSet, and set a default level of INFO to avoid breaking existing calls.
+To support log levels, we’ll convert our _basic_ function into an _advanced_ function by using a param() block. This lets us define acceptable values with ValidateSet(), and set a default level of INFO to avoid breaking existing calls.
 
 ```powershell
 function Write-Log {
     param (
         [ValidateSet("INFO","WARN","ERROR","DEBUG")]
-        [string] $LogLevel = INFO,
+        [string] $LogLevel = 'INFO',
 
         [string] $Message
     )
@@ -97,7 +97,7 @@ function Write-Log {
 ### Fourth: Capturing the Logs
 In this final step we'll capturing the logs in a local file. This raises a few questions like, what if the file does not exist? is Write-Output the right cmdlet to use for writing to a file, or should I consider Set/Add-Content?
 
-There isn't a right answer, but I will stick with Write-Output since it is slightly more in alignment with my automation philosophies.
+There isn't one right answer, but I will stick with Write-Output since it is slightly more in alignment with my automation philosophies.
 
 ```powershell
 function Write-Log {
@@ -148,3 +148,5 @@ function Write-Log {
 
 ## Final thoughts
 Making logging a design habit is a key step toward building automation that’s not just functional, but reliable, readable, and built to last.
+
+[code](https://github.com/clarityoverclever/libClarity/blob/main/Logging/Write-Log.ps1)

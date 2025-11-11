@@ -149,4 +149,4 @@ function Write-Log {
 ## Final thoughts
 Making logging a design habit is a key step toward building automation that’s not just functional, but reliable, readable, and built to last.
 
-[download the code here](https://github.com/clarityoverclever/libClarity/blob/main/Logging/Write-Log.ps1)
+[download the code here](https://github.com/clarityoverclever/libClarity/blob/main/logging/Write-Log.ps1)

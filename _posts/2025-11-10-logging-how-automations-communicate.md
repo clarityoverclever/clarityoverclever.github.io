@@ -38,7 +38,7 @@ I would say that this _is_ a log entry, but there are several areas of improveme
  - Add persistence for monitoring or later analysis
 
 #### Proxy-functions and wrappers
-Sometimes we need to expand or restrict a cmdlet’s behavior which can be done by "wrapping" code in a function. We will do this with Write-Output to focus it away from general output and into specialized log output. I will talk at length about wrappers and function development in a future post, but for now let's break down our log develpment into stages.
+Sometimes we need to expand or restrict a cmdlet’s behavior which can be done by "wrapping" code in a function. We will do this with Write-Output to focus it away from general output and into specialized log output. I will talk at length about wrappers and function development in a future post, but for now let's break down our log development into stages.
 
 - Extract the method into a function
 - Tighten up the implemenation with data typing and validation

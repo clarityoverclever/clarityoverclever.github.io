@@ -56,13 +56,13 @@ Note: I prefer to use `snake_case` for standard path variables and `ALL_CAP_SNAK
 
 ```powershell
 # mutable path variables for flexibility
-[string] $root_path    = $PSScriptRoot
+[string] $root_path    = Split-Path -Path $PSScriptRoot -Parent
 [string] $config_path  = Join-Path -Path $root_path -ChildPath 'config'
 [string] $lib_path     = Join-Path -Path $root_path -ChildPath 'lib'
 [string] $log_path     = Join-Path -Path $root_path -ChildPath 'log'
 
 # immutable path variables for stability
-Set-Variable -Name ROOT_PATH   -Value $PSScriptRoot -Option ReadOnly
+Set-Variable -Name ROOT_PATH   -Value (Split-Path -Path $PSScriptRoot -Parent) -Option ReadOnly
 Set-Variable -Name CONFIG_PATH -Value (Join-Path -Path $ROOT_PATH -ChildPath 'config') -Option ReadOnly
 Set-Variable -Name LIB_PATH    -Value (Join-Path -Path $ROOT_PATH -ChildPath 'lib')    -Option ReadOnly
 Set-Variable -Name LOG_PATH    -Value (Join-Path -Path $ROOT_PATH -ChildPath 'log')    -Option ReadOnly

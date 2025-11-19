@@ -107,7 +107,7 @@ $config = @{
 }
 ```
 > **Notes on Credentials:**  
-> In the above example I have a call to Get-Credential which will prompt the user for a credential every time the automation runs. This is probably not an ideal scenario, and I will discuss at length ways to store credentials or elevate an automation's session, in a future post.
+> In the above example I have a call to Get-Credential which will prompt the user for a credential every time the automation runs. This is probably not an ideal scenario, and I discuss at length ways to store credentials or elevate an automation's session [here](https://clarityoverclever.github.io/posts/secure-powershell-automation-credential-management-across-windows-and-linux/).
 > 
 > Considerations :  
 > - Never store plaintext credentials in script files, use a secure storage mechanism instead.  

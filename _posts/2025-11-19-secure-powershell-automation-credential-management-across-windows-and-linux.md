@@ -12,7 +12,7 @@ layout: post
 Automation often requires securely storing credentials so scripts can interact with protected systems. Because credentials are sensitive, mishandling them can expose entire systems to compromise. We all know that hardcoding credentials into automations is risky, so the real challenge is finding the right balance: how do we keep PowerShell automations efficient while ensuring strong security?  
 
 ## Storing Credentials
-When storing credentials on a Windows system, PowerShell can leverage the built-in Data Application Programming Interface (DPAPI) which allows applications to securely encrypt and decrypt sensitive data using keys derived from the user profile and machine; howevere, there is no direct equivilant to DPAPI on Linux/Unix systems which can lead to unexpected behavior if those cmdlets are used on such systems. Let's explore how this works in practice:
+When storing credentials on a Windows system, PowerShell can leverage the built-in Data Application Programming Interface (DPAPI) which allows applications to securely encrypt and decrypt sensitive data using keys derived from the user profile and machine; however, there is no direct equivilant to DPAPI on Linux/Unix systems which can lead to unexpected behavior if those cmdlets are used on such systems. Let's explore how this works in practice:
 
 ### Windows PowerShell (Windows)
 Consider the following functions that prompt a Windows user for a credential, exports it into an XML file comprising of a username string, a SecureString password, and some metadata.
@@ -138,7 +138,7 @@ function Import-CredentialFromFile {
 ```
 > - When collecting identifiers, I’m using the PowerShell Core **null‑coalescing operator (`??`)** to fall back gracefully if an environment variable doesn’t exist. This ensures the function always resolves a value without throwing errors.
 
-> - In my example, I limited the identifiers to the logged‑in user and machine name. However, you can substitute any values that are reasonably unique in your environment. 
+> - In my example, I limited the identifiers to the logged‑in user and machine name; however, you can substitute any values that are reasonably unique in your environment. 
 
 > - As an alternative, you could generate a random hash once, store it in a file with strict permissions (similar to an SSH private key, e.g. `chmod 600`), and then import it as the encryption key:
 >   ```powershell

@@ -74,19 +74,18 @@ function Read-SecureString {
     }
 }
 ```
-> The credential username is not considered sensitive and can be read like any System.String while the transformation of the SecureString password into plaintext is done with:
+> The credential username is not considered sensitive and can be read like any System.String while transformation of the SecureString password is required to pass it as plaintext.
 > 
-> [System.String][Runtime.InteropServices.Marshal]::PtrToStringAuto(
->   [Runtime.InteropServices.Marshal]::SecureStringToBSTR($Credential.Password)
-> )
->
 {: .notice--danger}
 > ⚠️ **Security Note**
 > Decrypting the SecureString is not always necessary as some applications take SecureStrings or PsCredential objects as parameters. When it is necessary to decrypt and assign a SecureString, make sure to destroy the variable after use.  
 > Remove-Variable -Name _variable_ -Force
 
 ### PowerShell Core (Linux/Unix)
-To approximate the same behavior on a non-Windows system, we will need to generate an encryption key using collectable identifiers and passing that key as a parameter during the SecureString creation.
+PowerShell Core on non‑Windows platforms doesn’t have access to DPAPI, and some interop behaviors can yield unreliable results, so there are some things to consider when building crossplatform automations:
+ - DPAPI absence: SecureString serialization/deserialization must use AES with a supplied key, not the default DPAPI.
+ - Interop pitfalls: Calls like Marshal.PtrToStringAuto are Windows‑specific and can misbehave cross‑platform (e.g., returning only the first character). Prefer managed .NET APIs that behave consistently everywhere.
+ - Serialization format: Export‑CliXml can add type metadata that complicates deserialization on Linux. Using JSON for simple PSCustomObjects is often cleaner and more predictable.
 
 ```powershell
 function Get-UserMachineKey {
@@ -104,23 +103,27 @@ function Get-UserMachineKey {
     return $hash[0..31]  # 32-byte AES key
 }
 
-function New-CredentialToFile {
+function Export-CredentialToFile {
     param (
         [Parameter(Position = 0, Mandatory = $true)]
-        [string] $Path
+        [string] $KeyPath,
+
+        [Parameter(Position = 1, Mandatory = $true)]
+        [string] $KeyName
     )
 
-    $credential = Get-Credential
-    $key = Get-UserMachineKey
+    [pscredential] $credential = Get-Credential
+    [byte[]]       $key        = Get-UserMachineKey
 
-    $secureText = $credential.Password | ConvertFrom-SecureString -Key $key
+    [string]       $secureText = ConvertFrom-SecureString -SecureString $credential.Password -Key $key
 
     $object = [PSCustomObject]@{
         UserName = $credential.UserName
         Password = $secureText
     }
 
-    $object | Export-Clixml $Path
+    $fullpath = Join-Path -Path $KeyPath -ChildPath $KeyName
+    $object | ConvertTo-Json | Set-Content -Path $fullpath -Encoding UTF8
 }
 
 function Import-CredentialFromFile {
@@ -129,11 +132,24 @@ function Import-CredentialFromFile {
         [string] $Path
     )
 
-    $credential = Import-Clixml -Path $Path
-    $key = Get-UserMachineKey
+    # wihtout DPAPI PS can't deserialize Clixml to a credential directly
+    $object = Get-Content -Path $Path -Raw | ConvertFrom-Json
 
-    $secureString = $credential.Password | ConvertTo-SecureString -Key $key
-    return New-Object System.Management.Automation.PSCredential($credential.UserName, $secureString)
+    if (-not $object.UserName -or -not $object.Password) {
+        throw "File at '$Path' does not contain expected credential fields."
+    }
+
+    # extract PsCredential fields from the imported hashtable
+    $user      = $object.UserName
+    $encrypted = $object.Password
+
+    # calculate the machine key
+    [byte[]] $key = Get-UserMachineKey
+
+    # build a SecureString for teh credential password
+    [securestring] $secureString = ConvertTo-SecureString $encrypted -Key $key
+
+    return New-Object System.Management.Automation.PSCredential($user, $secureString)
 }
 ```
 > - When collecting identifiers, I’m using the PowerShell Core **null‑coalescing operator (`??`)** to fall back gracefully if an environment variable doesn’t exist. This ensures the function always resolves a value without throwing errors.
@@ -157,6 +173,59 @@ if ($IsWindows) {
     $cred = Import-CredentialFromFile -Path "/home/user/myCred.xml"
 }
 ```
+
+or if you are building a module, the best practice would be to build a crossplatform, public API that wraps platform specific methods privately. This has the advantage of exposing a consistent user experience while maintaining clear, modular functionality.
+
+```powershell
+# public facing crossplatform credential export API
+function Export-CredentialToFile {
+    [CmdletBinding()]
+    param(
+        [ValidateSet("Windows", "Linux", "MacOS")]
+        [string] $Platform
+    )
+
+    if ($Platform) {
+        switch ($Platform) {
+            "Windows" { return Export-CredentialToFileWindows }
+            "Linux"   { return Export-CredentialToFileLinux }
+        }
+    } else {
+        if ($IsWindows) {
+            return Export-CredentialToFileWindows 
+        } elseif ($IsLinux -or $IsMacOS) {
+            return Export-CredentialToFileLinux
+        } else {
+            throw "Unsupported OS: $($_)"
+        }
+    }
+}
+
+# public facing crossplatform credential import API
+function Import-CredentialFromFile {
+    [CmdletBinding()]
+    param(
+        [ValidateSet("Windows", "Linux", "MacOS")]
+        [string] $Platform
+    )
+
+    if ($Platform) {
+        switch ($Platform) {
+            "Windows" { return Import-CredentialFromFileWindows }
+            "Linux"   { return Import-CredentialFromFileLinux }
+        }
+    } else {
+        if ($IsWindows) {
+            return Import-CredentialFromFileWindows 
+        } elseif ($IsLinux -or $IsMacOS) {
+            return Import-CredentialFromFileLinux
+        } else {
+            throw "Unsupported OS: $($_)"
+        }
+    }
+}
+```
+
 {: .notice--info}
 > 💡 **Cross‑platform Note**  
 > Both the Windows (DPAPI) and Linux/macOS (key‑based) implementations return a `PSCredential` object. 
@@ -186,4 +255,6 @@ $credential = Get-Secret -Name MyServiceCred
 ## Final Thoughts
 In this post I attempted to illustrate some of the options available to you for secrets management. Like so many things, there is no "one right solution" and each approach comes with trade-offs that you will need to balance against your needs, and your environment.
 
-As you design PowerShell automations, aim to keep credentials out of plain text, prefer `PSCredential` and `SecureString` objects where possible, and consider adopting SecretManagement for long‑term, cross‑platform workflows. By balancing efficiency with security, you can build automations that are both powerful and responsible.
+As you design PowerShell automations, aim to keep credentials out of plain text, prefer `PSCredential` and `SecureString` objects where possible, and consider adopting SecretManagement for long‑term, cross‑platform workflows.
+
+Overall, by balancing efficiency with security, you can build automations that are both powerful and responsible.

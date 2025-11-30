@@ -22,7 +22,7 @@ We can later import the XML file and read the credential directly.
 Since DPAPI leverages OS level interactions and encrypts the password in a way that binds it to the machine and user, it makes for a simple method of storing credentials for PowerShell automations on a Windows system.
 
 ```powershell
-function New-CredentialToFile {
+function Export-CredentialToFile {
     param (
         [Parameter(Position = 0, Mandatory = $true)]
         [string] $KeyPath,
@@ -258,3 +258,6 @@ In this post I attempted to illustrate some of the options available to you for 
 As you design PowerShell automations, aim to keep credentials out of plain text, prefer `PSCredential` and `SecureString` objects where possible, and consider adopting SecretManagement for long‑term, cross‑platform workflows.
 
 Overall, by balancing efficiency with security, you can build automations that are both powerful and responsible.
+
+[download public code here](https://github.com/clarityoverclever/libClarity/blob/main/Credentials)
+[download private code here](https://github.com/clarityoverclever/libClarity/blob/main/private/credentials)
